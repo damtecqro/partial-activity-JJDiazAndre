@@ -1,0 +1,8 @@
+Juan José Díaz André
+A01066352
+
+What made it easier for you to implement the view? 
+The already made methods from Kotlin
+
+What made it difficult for you to implement the view?
+Lack of understanding of said methods, a lot of calls between functions and lack of well made documentation on specific problems
