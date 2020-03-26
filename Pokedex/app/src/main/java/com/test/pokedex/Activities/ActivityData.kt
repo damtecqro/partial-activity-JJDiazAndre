@@ -1,7 +1,6 @@
 package com.test.pokedex.Activities
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
@@ -10,19 +9,20 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.JsonArray
 import com.koushikdutta.ion.Ion
-import com.test.pokedex.Adapters.AdapterList
-import com.test.pokedex.Adapters.Pokemon
+import com.test.pokedex.Adapters.AdapterData
 import com.test.pokedex.R
 
-import kotlinx.android.synthetic.main.activity_list.*
+import kotlinx.android.synthetic.main.activity_data.*
+import kotlinx.android.synthetic.main.activity_data.fab
+import kotlinx.android.synthetic.main.activity_data.toolbar
 
-class ActivityList : AppCompatActivity() {
+class ActivityData : AppCompatActivity() {
 
     private var context: Context = this
 
     private lateinit var data:JsonArray
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var adapter:AdapterList
+    private lateinit var adapter:AdapterData
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,10 +30,12 @@ class ActivityList : AppCompatActivity() {
         setContentView(R.layout.activity_list)
         setSupportActionBar(toolbar)
 
+        val bundle: Bundle? = intent.extras
+        val id = bundle?.get("id")
+
         initializeComponents()
         initializeListeners()
-        initializeData()
-
+        initializeData(id as Int)
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -49,9 +51,9 @@ class ActivityList : AppCompatActivity() {
 
     }
 
-    fun initializeData(){
+    fun initializeData(id: Int){
         Ion.with(context)
-            .load("https://pokeapi.co/api/v2/pokemon/?offset=0&limit=964")
+            .load("https://pokeapi.co/api/v2/pokemon/" + id + "/")
             .asJsonObject()
             .done { e, result ->
                 if(e == null){
@@ -69,20 +71,15 @@ class ActivityList : AppCompatActivity() {
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         linearLayoutManager.scrollToPosition(0)
 
-        adapter = AdapterList (data, { pokemon: Pokemon -> pokemonClicked(pokemon)})
-        adapter.AdapterList(context,data)
 
-        recycler_view_list.layoutManager = linearLayoutManager
-        recycler_view_list.adapter = AdapterList (data ,{pokemon: Pokemon -> pokemonClicked(pokemon)})
-        recycler_view_list.setHasFixedSize(true)
-        recycler_view_list.itemAnimator = DefaultItemAnimator()
+        adapter = AdapterData()
+        adapter.AdapterData(context,data)
 
-    }
+        recycler_view_data.layoutManager = linearLayoutManager
+        recycler_view_data.adapter = adapter
+        recycler_view_data.setHasFixedSize(true)
+        recycler_view_data.itemAnimator = DefaultItemAnimator()
 
-    fun pokemonClicked(pokemon: Pokemon){
-        val showDetailActivityIntent = Intent(this, ActivityData::class.java)
-        showDetailActivityIntent.putExtra(Intent.EXTRA_TEXT, pokemon.id.toString())
-        startActivity(showDetailActivityIntent)
     }
 
 }
